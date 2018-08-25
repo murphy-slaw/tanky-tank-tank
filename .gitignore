@@ -1,0 +1,8 @@
+engine.cfg
+icon.png
+.import/
+default_env.tres
+.DS_Store
+artifacts/
+archive/
+*.import

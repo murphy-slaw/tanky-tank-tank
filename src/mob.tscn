@@ -1,0 +1,61 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://mob.gd" type="Script" id=1]
+[ext_resource path="res://Sprites/tankBody_blue_outline.png" type="Texture" id=2]
+[ext_resource path="res://Sprites/tankBlue_barrel2_outline.png" type="Texture" id=3]
+[ext_resource path="res://Turret.gd" type="Script" id=4]
+
+[sub_resource type="RectangleShape2D" id=1]
+
+custom_solver_bias = 0.0
+extents = Vector2( 16, 16 )
+
+[node name="Mob" type="RigidBody2D" index="0"]
+
+position = Vector2( -0.0373878, -0.0373878 )
+input_pickable = false
+collision_layer = 1
+collision_mask = 1
+mode = 0
+mass = 1.0
+friction = 0.0
+bounce = 0.5
+gravity_scale = 1.0
+custom_integrator = false
+continuous_cd = 0
+contacts_reported = 0
+contact_monitor = false
+sleeping = false
+can_sleep = false
+linear_velocity = Vector2( 0, 0 )
+linear_damp = 0.9
+angular_velocity = 0.0
+angular_damp = -1.0
+script = ExtResource( 1 )
+_sections_unfolded = [ "Linear", "Transform" ]
+nav_path = null
+goal_path = null
+speed = 50
+goal_radius = 500
+
+[node name="Body" type="Sprite" parent="." index="0"]
+
+rotation = -1.5708
+scale = Vector2( 0.75, 0.75 )
+texture = ExtResource( 2 )
+_sections_unfolded = [ "Transform" ]
+
+[node name="Turret" type="Sprite" parent="." index="1"]
+
+rotation = -1.5708
+scale = Vector2( 0.75, 0.75 )
+texture = ExtResource( 3 )
+offset = Vector2( 0, 10 )
+script = ExtResource( 4 )
+_sections_unfolded = [ "Offset", "Transform" ]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." index="2"]
+
+shape = SubResource( 1 )
+
+

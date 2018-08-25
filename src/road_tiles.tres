@@ -1,0 +1,97 @@
+[gd_resource type="TileSet" load_steps=14 format=2]
+
+[ext_resource path="res://Sprites/terrainTiles_default.png" type="Texture" id=1]
+
+[sub_resource type="NavigationPolygon" id=1]
+
+vertices = PoolVector2Array( 16, 64, 16, 0, 48, 0, 48, 64 )
+polygons = [ PoolIntArray( 0, 1, 2, 3 ) ]
+outlines = [  ]
+
+[sub_resource type="NavigationPolygon" id=2]
+
+vertices = PoolVector2Array( 0, 48, 0, 16, 16, 16, 16, 0, 48, 0, 48, 8, 56, 16, 64, 16, 64, 48, 48, 48, 48, 64, 16, 64, 16, 56, 8, 48 )
+polygons = [ PoolIntArray( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 ) ]
+outlines = [  ]
+
+[sub_resource type="NavigationPolygon" id=3]
+
+vertices = PoolVector2Array( 0, 48, 0, 16, 64, 16, 64, 48 )
+polygons = [ PoolIntArray( 0, 1, 2, 3 ) ]
+outlines = [  ]
+
+[sub_resource type="NavigationPolygon" id=4]
+
+vertices = PoolVector2Array( 0, 48, 0, 16, 16, 16, 16, 0, 48, 0, 48, 16, 64, 16, 64, 48, 48, 48, 48, 64, 16, 64, 16, 48 )
+polygons = [ PoolIntArray( 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ) ]
+outlines = [  ]
+
+[sub_resource type="NavigationPolygon" id=5]
+
+vertices = PoolVector2Array( 16, 64, 16, 0, 48, 0, 48, 16, 64, 16, 64, 48, 48, 48, 48, 64 )
+polygons = [ PoolIntArray( 0, 1, 2, 3, 4, 5, 6, 7 ) ]
+outlines = [  ]
+
+[sub_resource type="NavigationPolygon" id=6]
+
+vertices = PoolVector2Array( 16, 64, 16, 48, 24, 32, 48, 16, 64, 16, 64, 48, 56, 48, 48, 56, 48, 64 )
+polygons = [ PoolIntArray( 0, 1, 2, 3, 4, 5, 6, 7, 8 ) ]
+outlines = [  ]
+
+[sub_resource type="NavigationPolygon" id=7]
+
+vertices = PoolVector2Array( 16, 64, 16, 48, 0, 48, 0, 16, 16, 16, 16, 0, 48, 0, 48, 64 )
+polygons = [ PoolIntArray( 0, 1, 2, 3, 4, 5, 6, 7 ) ]
+outlines = [  ]
+
+[sub_resource type="NavigationPolygon" id=8]
+
+vertices = PoolVector2Array( 0, 16, 16, 16, 40, 32, 48, 48, 48, 64, 16, 64, 16, 56, 8, 48, 0, 48 )
+polygons = [ PoolIntArray( 0, 1, 2, 3, 4, 5, 6, 7, 8 ) ]
+outlines = [  ]
+
+[sub_resource type="NavigationPolygon" id=9]
+
+vertices = PoolVector2Array( 0, 48, 0, 16, 16, 16, 16, 0, 48, 0, 48, 16, 64, 16, 64, 48 )
+polygons = [ PoolIntArray( 0, 1, 2, 3, 4, 5, 6, 7 ) ]
+outlines = [  ]
+
+[sub_resource type="NavigationPolygon" id=10]
+
+vertices = PoolVector2Array( 16, 0, 48, 0, 48, 8, 56, 16, 64, 16, 64, 48, 48, 48, 24, 32, 16, 16 )
+polygons = [ PoolIntArray( 0, 1, 2, 3, 4, 5, 6, 7, 8 ) ]
+outlines = [  ]
+
+[sub_resource type="NavigationPolygon" id=11]
+
+vertices = PoolVector2Array( 0, 48, 0, 16, 64, 16, 64, 48, 48, 48, 48, 64, 16, 64, 16, 48 )
+polygons = [ PoolIntArray( 0, 1, 2, 3, 4, 5, 6, 7 ) ]
+outlines = [  ]
+
+[sub_resource type="NavigationPolygon" id=12]
+
+vertices = PoolVector2Array( 0, 16, 8, 16, 16, 8, 16, 0, 48, 0, 48, 16, 40, 32, 16, 48, 0, 48 )
+polygons = [ PoolIntArray( 0, 1, 2, 3, 4, 5, 6, 7, 8 ) ]
+outlines = [  ]
+
+[resource]
+
+0/name = "Sprite"
+0/texture = ExtResource( 1 )
+0/tex_offset = Vector2( 0, 0 )
+0/modulate = Color( 1, 1, 1, 1 )
+0/region = Rect2( 0, 0, 448, 128 )
+0/is_autotile = true
+0/autotile/bitmask_mode = 1
+0/autotile/icon_coordinate = Vector2( 0, 0 )
+0/autotile/tile_size = Vector2( 64, 64 )
+0/autotile/spacing = 0
+0/autotile/bitmask_flags = [ Vector2( 1, 0 ), 146, Vector2( 1, 1 ), 186, Vector2( 2, 0 ), 56, Vector2( 2, 1 ), 186, Vector2( 3, 0 ), 178, Vector2( 3, 1 ), 176, Vector2( 4, 0 ), 154, Vector2( 4, 1 ), 152, Vector2( 5, 0 ), 58, Vector2( 5, 1 ), 50, Vector2( 6, 0 ), 184, Vector2( 6, 1 ), 26 ]
+0/autotile/occluder_map = [  ]
+0/autotile/navpoly_map = [ Vector2( 1, 0 ), SubResource( 1 ), Vector2( 1, 1 ), SubResource( 2 ), Vector2( 2, 0 ), SubResource( 3 ), Vector2( 2, 1 ), SubResource( 4 ), Vector2( 3, 0 ), SubResource( 5 ), Vector2( 3, 1 ), SubResource( 6 ), Vector2( 4, 0 ), SubResource( 7 ), Vector2( 4, 1 ), SubResource( 8 ), Vector2( 5, 0 ), SubResource( 9 ), Vector2( 5, 1 ), SubResource( 10 ), Vector2( 6, 0 ), SubResource( 11 ), Vector2( 6, 1 ), SubResource( 12 ) ]
+0/autotile/priority_map = [  ]
+0/occluder_offset = Vector2( 320, 128 )
+0/navigation_offset = Vector2( 320, 128 )
+0/shapes = [  ]
+_sections_unfolded = [ "0" ]
+
