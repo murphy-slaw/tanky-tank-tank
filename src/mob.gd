@@ -1,53 +1,126 @@
-extends RigidBody2D
+extends KinematicBody2D
 
 signal die
 
-export (NodePath) var nav_path
-export (NodePath) var goal_path
+const Bullet = preload("res://Bullet.tscn")
+
 export (int) var speed = 30
-export (int) var goal_radius = 500
-var points = []
-var nav
+var max_accel = speed / 4
+var lv = Vector2()
+
+export (NodePath) var nav_path
+onready var nav = get_node(nav_path)
+export (int) var goal_radius = 1000
+var path = []
 var goal = null
+
+onready var space_state = get_world_2d().direct_space_state
+var can_shoot = false
+var targets  = {}
+var laser_color = Color(1.0, 0, 0)
 
 func _ready():
     nav = get_node(nav_path)
+    choose_random_goal()
+    $ShotTimer.start()
+    
+func clean_targets():
+    for target_ref in targets.keys():
+        if not target_ref.get_ref():
+            targets.erase(target_ref)
+    if targets:
+        $Label.text = str(targets.size())
+    else:
+        $Label.text = ""
+    update()
+    
+func _draw():
+    for target_ref in targets.keys():
+        var target = target_ref.get_ref()
+        if target:
+            draw_line(Vector2(), 
+                (target.position - position).rotated(-rotation),
+                laser_color, 0.25)
+
+func shoot():
+    if not can_shoot:
+        return
+    var bullet = Bullet.instance()
+    bullet.add_collision_exception_with(self)
+    get_parent().add_child(bullet)
+    bullet.global_position = $Turret.global_position
+    bullet.rotation = $Turret.rotation + rotation
+    bullet.owner = get_parent()
+    can_shoot = false
+    $ShotTimer.start()
+    
+func aim():
+    var target = null
+    for target_ref in targets.keys():
+        target = target_ref.get_ref()
+        if target and aim_turret(target):
+            shoot()
+    update()
+                   
+func aim_turret(target):
+    var hit_pos = shoot_aim_ray(target)
+    if hit_pos:
+        var goal_angle = (
+            target.position - position).angle() - rotation
+        $Turret.rotation = lerp($Turret.rotation, goal_angle, 0.025)
+        return abs($Turret.rotation - goal_angle) < 0.01
+            
+func shoot_aim_ray(target): 
+    var result = space_state.intersect_ray(position, target.position,
+                    [self], collision_mask)
+    if result and result.collider == target:
+        return result.position
+        
+func _on_ShotTimer_timeout():
+    can_shoot = true
     
 func update_nav():
     if goal:
-        points = nav.get_simple_path(global_position, goal, true)
-    
+        path = nav.get_simple_path(global_position, goal, false)
+        
 func _physics_process(delta):
-    if goal == null:
-        goal = get_node(goal_path).position
-#        choose_random_goal()
+    clean_targets()
+    if not goal:
+        choose_random_goal()
     update_nav()
-    if not points.size() > 1:
+    if not path.size() > 1:
         return
-    
-
-    var impulse_pos = Vector2()
-
-#    look_at(points[1])
-    if global_position.floor() != points[-1].floor():
-        var vel = linear_velocity.length()
-        if vel < speed:
-            var move = points[1] - global_position
-            var distance = move.length()
-            move = move.normalized() * min(speed - vel, distance)
         
-            apply_impulse(impulse_pos, Vector2(1,0).rotated(rotation) * move.length())
+    if not targets:
+        $Turret.rotation = lerp($Turret.rotation, 0, 0.1)
+          
+    var move = path[1] - global_position
+    var distance = move.length()
+    var target_angle = get_angle_to(path[1])
+    if abs(target_angle) > 0.01 and distance > 20 :
+        rotation += min(0.025, abs(target_angle)) * sign(target_angle)
+    else:
+        var pointing  = move.normalized()
         
-        var distance = (points[-1] - global_position).length()
-        if distance < 10:
-            choose_random_goal()
+        var vel = lv.length()
+        if ((vel < speed and
+                pointing.dot(Vector2(1,0).rotated(rotation)) > 0) 
+                or (lv.length() >= 0.001)):
+            move = move.normalized() * min(max_accel, min(speed - vel, distance))
+            if test_move(transform, move):
+                choose_random_goal()
+            else:
+                lv += move
             
-func _integrate_forces(state):
-    var target_angle = global_position.angle_to(points[1])
-    target_angle = rotation - target_angle
-    
-    angular_velocity -= target_angle / -target_angle / 10
-    
+    move_and_slide(lv)
+    if get_slide_count():
+        die()
+    lv *= 0.9
+    aim()
+        
+    if (global_position - path[-1]).length() < 10:
+        goal = null
+            
     
 func choose_random_goal():
     var point = Vector2(1,0)
@@ -58,3 +131,18 @@ func choose_random_goal():
 func die():
     emit_signal('die')
     queue_free()
+    
+func hit(body):
+    die()
+
+func _on_Visibility_body_entered(body):
+    if body != self and body.is_in_group('Tanks'):
+        targets[weakref(body)] = 1
+        if randi() % 4 == 0:
+            goal = nav.get_closest_point(body.position)
+
+func _on_Visibility_body_exited(body):
+    for target_ref in targets.keys():
+        var target = target_ref.get_ref()
+        if (target and target == body) or not target:
+            targets.erase(target_ref)
