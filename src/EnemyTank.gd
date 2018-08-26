@@ -2,14 +2,15 @@ extends KinematicBody2D
 
 signal die
 
-const Bullet = preload("res://Bullet.tscn")
+const Bullet = preload("res://Missile.tscn")
+onready var Artillery = get_node("/root/Artillery")
 
 export (int) var speed = 30
-var max_accel = speed / 4
+var max_accel = speed * 0.5
 var lv = Vector2()
 
 export (NodePath) var nav_path
-onready var nav = get_node(nav_path)
+var nav
 export (int) var goal_radius = 1000
 var path = []
 var goal = null
@@ -17,11 +18,14 @@ var goal = null
 onready var space_state = get_world_2d().direct_space_state
 var can_shoot = false
 var targets  = {}
+export var draw_lasers = false
 var laser_color = Color(1.0, 0, 0)
+export var shot_precision = 0.1
 
 func _ready():
-    nav = get_node(nav_path)
-    choose_random_goal()
+    if nav_path:
+        nav = get_node(nav_path)
+        choose_random_goal()
     $ShotTimer.start()
     
 func clean_targets():
@@ -35,6 +39,8 @@ func clean_targets():
     update()
     
 func _draw():
+    if not draw_lasers:
+        return
     for target_ref in targets.keys():
         var target = target_ref.get_ref()
         if target:
@@ -42,34 +48,36 @@ func _draw():
                 (target.position - position).rotated(-rotation),
                 laser_color, 0.25)
 
-func shoot():
+func shoot(target):
     if not can_shoot:
         return
+    can_shoot = false
     var bullet = Bullet.instance()
     bullet.add_collision_exception_with(self)
     get_parent().add_child(bullet)
     bullet.global_position = $Turret.global_position
-    bullet.rotation = $Turret.rotation + rotation
+    bullet.global_rotation = $Turret.global_rotation 
+    bullet.target = weakref(target)
     bullet.owner = get_parent()
-    can_shoot = false
+    bullet.set_physics_process(true)
     $ShotTimer.start()
     
 func aim():
     var target = null
     for target_ref in targets.keys():
         target = target_ref.get_ref()
-        if target and aim_turret(target):
-            shoot()
+        var target_pos = shoot_aim_ray(target)
+        if target_pos and aim_turret(target_pos) and can_shoot:
+            shoot(target)
     update()
                    
-func aim_turret(target):
-    var hit_pos = shoot_aim_ray(target)
-    if hit_pos:
-        var goal_angle = (
-            target.position - position).angle() - rotation
-        $Turret.rotation = lerp($Turret.rotation, goal_angle, 0.025)
-        return abs($Turret.rotation - goal_angle) < 0.01
-            
+func aim_turret(pos):
+        var angle_diff = Artillery.calc_angle_diff(self, pos)
+        var goal_angle = angle_diff
+        $Turret.rotation = lerp($Turret.rotation, goal_angle, 0.1)
+        return abs($Turret.rotation - goal_angle) < shot_precision
+
+
 func shoot_aim_ray(target): 
     var result = space_state.intersect_ray(position, target.position,
                     [self], collision_mask)
@@ -80,7 +88,7 @@ func _on_ShotTimer_timeout():
     can_shoot = true
     
 func update_nav():
-    if goal:
+    if goal and nav:
         path = nav.get_simple_path(global_position, goal, false)
         
 func _physics_process(delta):
@@ -100,13 +108,14 @@ func _physics_process(delta):
     if abs(target_angle) > 0.01 and distance > 20 :
         rotation += min(0.025, abs(target_angle)) * sign(target_angle)
     else:
-        var pointing  = move.normalized()
+        var direction  = move.normalized()
         
         var vel = lv.length()
         if ((vel < speed and
-                pointing.dot(Vector2(1,0).rotated(rotation)) > 0) 
+                direction.dot(Vector2(1,0).rotated(rotation)) > 0) 
                 or (lv.length() >= 0.001)):
-            move = move.normalized() * min(max_accel, min(speed - vel, distance))
+            move = move.normalized() * min(max_accel, 
+                min(speed - vel, pow(distance, 2)))
             if test_move(transform, move):
                 choose_random_goal()
             else:
@@ -123,6 +132,7 @@ func _physics_process(delta):
             
     
 func choose_random_goal():
+    if not nav: return
     var point = Vector2(1,0)
     var angle = deg2rad(randi() % 360)
     point = position + point.rotated(angle) * goal_radius

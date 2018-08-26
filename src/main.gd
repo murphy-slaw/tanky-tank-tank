@@ -1,6 +1,6 @@
 extends Node2D
 
-const Mob = preload("res://mob.tscn")
+const Mob = preload("res://EnemyTank.tscn")
 var mob_count = 0
 export var max_mobs = 10
 
