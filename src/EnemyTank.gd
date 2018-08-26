@@ -1,6 +1,7 @@
 extends KinematicBody2D
 
 signal die
+signal chose_goal
 
 const Bullet = preload("res://Missile.tscn")
 onready var Artillery = get_node("/root/Artillery")
@@ -12,10 +13,12 @@ var lv = Vector2()
 export (NodePath) var nav_path
 var nav
 export (int) var goal_radius = 1000
+var map = null
 var path = []
 var goal = null
 
 onready var space_state = get_world_2d().direct_space_state
+
 var can_shoot = false
 var targets  = {}
 export var draw_lasers = false
@@ -39,14 +42,14 @@ func clean_targets():
     update()
     
 func _draw():
-    if not draw_lasers:
-        return
-    for target_ref in targets.keys():
-        var target = target_ref.get_ref()
-        if target:
-            draw_line(Vector2(), 
-                (target.position - position).rotated(-rotation),
-                laser_color, 0.25)
+    if draw_lasers:
+        for target_ref in targets.keys():
+            var target = target_ref.get_ref()
+            if target:
+                draw_line(Vector2(), 
+                    (target.position - position).rotated(-rotation),
+                    laser_color, 0.25)
+
 
 func shoot(target):
     if not can_shoot:
@@ -137,9 +140,14 @@ func choose_random_goal():
     var angle = deg2rad(randi() % 360)
     point = position + point.rotated(angle) * goal_radius
     goal = nav.get_closest_point(point)
+    if map:
+        var tile = map.world_to_map(goal)
+        goal = map.map_to_world(tile)
+        goal += map.cell_size * 0.5
+    emit_signal("chose_goal", self, goal)
     
 func die():
-    emit_signal('die')
+    emit_signal('die', self)
     queue_free()
     
 func hit(body):
