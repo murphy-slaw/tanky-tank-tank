@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://EnemyTank.gd" type="Script" id=1]
 [ext_resource path="res://Sprites/tankBody_huge.png" type="Texture" id=2]
 [ext_resource path="res://Sprites/specialBarrel2.png" type="Texture" id=3]
+[ext_resource path="res://Floaty.gd" type="Script" id=4]
 
 [sub_resource type="CircleShape2D" id=1]
 
@@ -14,7 +15,7 @@ radius = 300.0
 custom_solver_bias = 0.0
 extents = Vector2( 18, 14.5 )
 
-[node name="EnemyTank" type="KinematicBody2D" groups=[
+[node name="EnemyTank" type="KinematicBody2D" index="0" groups=[
 "Tanks",
 ]]
 
@@ -24,11 +25,11 @@ collision_mask = 1
 collision/safe_margin = 0.08
 script = ExtResource( 1 )
 _sections_unfolded = [ "Collision", "Linear", "Transform", "collision" ]
-speed = 128
+speed = 125
 nav_path = null
-goal_radius = 1280
-draw_lasers = false
-shot_precision = 0.5
+goal_radius = 1000
+draw_lasers = true
+shot_precision = 0.1
 
 [node name="Visibility" type="Area2D" parent="." index="0"]
 
@@ -76,16 +77,23 @@ texture = ExtResource( 3 )
 offset = Vector2( 0, 10 )
 _sections_unfolded = [ "Offset", "Transform" ]
 
-[node name="Label" type="Label" parent="." index="5"]
+[node name="Floaty" type="Node2D" parent="." index="5"]
 
+visible = false
+script = ExtResource( 4 )
+_sections_unfolded = [ "Transform" ]
+
+[node name="Label" type="Label" parent="Floaty" index="0"]
+
+visible = false
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = -9.0
-margin_top = -31.0
-margin_right = 31.0
-margin_bottom = -17.0
+margin_left = -20.0
+margin_top = 18.0
+margin_right = 20.0
+margin_bottom = 32.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 mouse_filter = 2
