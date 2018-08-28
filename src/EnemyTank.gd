@@ -10,6 +10,7 @@ onready var Artillery = get_node("/root/Artillery")
 
 onready var label = get_node("Floaty/Label")
 
+export var enemy_group = "Player"
 export (int) var speed = 30
 var max_accel = speed * 0.5
 var lv = Vector2()
@@ -19,7 +20,7 @@ var nav
 export (int) var goal_radius = 1000
 var map = null
 var path = []
-var goal = null
+var goals = []
 
 onready var space_state = get_world_2d().direct_space_state
 
@@ -75,8 +76,10 @@ func aim():
     for target_ref in targets.keys():
         target = target_ref.get_ref()
         var target_pos = shoot_aim_ray(target)
-        if target_pos and aim_turret(target_pos) and can_shoot:
-            shoot(target)
+        if target_pos:
+             if aim_turret(target_pos) and can_shoot:
+                shoot(target)
+             break
     update()
 
 func aim_turret(pos):
@@ -95,10 +98,12 @@ func _on_ShotTimer_timeout():
     can_shoot = true
 
 func update_nav():
-    if goal and nav:
+    if goals and nav:
+        var goal = goals[0]
         path = nav.get_simple_path(global_position, goal, false)
         if path.size() >= 3:
             path = simplify_path(path)
+        emit_signal("chose_goal", self, path)
         
 func simplify_path(path):
     var compact_path = PoolVector2Array()
@@ -119,12 +124,15 @@ func are_collinear(points):
             points[0].y == points[1].y and points[1].y == points[2].y)
 
 func _physics_process(delta):
-    clean_targets()
-    if not goal:
+    
+    if goals.empty():
         choose_random_goal()
         
+    clean_targets()
+    
     if path and reached_goal(path[0]):
         path.remove(0)
+        
     if not path:
         update_nav()
         
@@ -133,10 +141,10 @@ func _physics_process(delta):
 
     move_tank()
     aim()
-    if goal and reached_goal(goal):
-        goal = null
-        path = []
-
+    if goals and reached_goal(goals[0]):
+        goals.pop_front()
+        update_nav()
+        
 func reached_goal(pos):
     return (global_position - pos).length() < 20
 
@@ -145,7 +153,6 @@ func move_tank():
     var dist_sq = move.length_squared()
     var target_angle = Artillery.calc_angle_diff(self, path[0])
     
-
     if abs(target_angle) > 0.025:
         rotation += (min(0.025, abs(target_angle)) * sign(target_angle))
     else:
@@ -155,16 +162,23 @@ func move_tank():
         if vel < speed and is_facing(direction):
             move = move.normalized() * min(max_accel,
                     min(speed - vel, dist_sq))
-            if test_move(transform, move):
-                goal = null
-            else:
-                lv += move
+            safe_move(move)
 
-    emit_signal("chose_goal", self, path)
     move_and_slide(lv)
     handle_collisions()
     lv *= 0.9
 
+func safe_move(move):
+    if test_move(transform, move):
+        var safe_point = get_facing() * -100
+        var safe = nav.get_closest_point(safe_point)
+        choose_random_goal()
+        goals.push_front(safe)
+        update_nav()
+        lv -= lv.normalized() * speed
+    else:
+        lv += move
+        
 func get_facing():
     return RIGHT.rotated(rotation)
 
@@ -176,16 +190,16 @@ func handle_collisions():
         die()
 
 func choose_random_goal():
-    if not nav: return
     var point = Vector2(1,0)
     var angle = deg2rad(randi() % 360)
     point = position + point.rotated(angle) * goal_radius
-    goal = nav.get_closest_point(point)
+    var goal = nav.get_closest_point(point)
     if map:
         var tile = map.world_to_map(goal)
         goal = map.map_to_world(tile)
         goal += map.cell_size * 0.5
-    emit_signal("chose_goal", self, goal)
+    goals.push_front(goal)
+    path = null
 
 func die():
     emit_signal('die', self)
@@ -195,10 +209,11 @@ func hit(body):
     die()
 
 func _on_Visibility_body_entered(body):
-    if body != self and body.is_in_group('Tanks'):
+    if body != self and body.is_in_group(enemy_group):
         targets[weakref(body)] = 1
         if randi() % 4 == 0:
-            goal = nav.get_closest_point(body.position)
+            goals.push_front(nav.get_closest_point(body.position))
+            update_nav()
 
 func _on_Visibility_body_exited(body):
     for target_ref in targets.keys():

@@ -41,7 +41,7 @@ func _draw():
     if not draw_mob_paths:
         return
     for points in mob_goals.values():
-        if points.size() > 1:
+        if points and points.size() > 1:
             draw_polyline(points, Color(0, 0, 0, 0.2), 2.0, false)
         for point in points:
             draw_circle(point, 5, Color(0, 0, 0, 0.2))
