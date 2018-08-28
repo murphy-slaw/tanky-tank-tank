@@ -3,6 +3,6 @@ icon.png
 .import/
 default_env.tres
 .DS_Store
-artifacts/
+build/
 archive/
 *.import
