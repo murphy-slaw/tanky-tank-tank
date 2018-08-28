@@ -1,8 +1,8 @@
 [gd_scene load_steps=7 format=2]
 
-[ext_resource path="res://EnemyTank.gd" type="Script" id=1]
-[ext_resource path="res://Sprites/tankBody_huge.png" type="Texture" id=2]
-[ext_resource path="res://Sprites/specialBarrel2.png" type="Texture" id=3]
+[ext_resource path="res://PlayerTank.gd" type="Script" id=1]
+[ext_resource path="res://Sprites/tankBody_green_outline.png" type="Texture" id=2]
+[ext_resource path="res://Sprites/tankDark_barrel1_outline.png" type="Texture" id=3]
 [ext_resource path="res://Floaty.gd" type="Script" id=4]
 
 [sub_resource type="CircleShape2D" id=1]
@@ -13,10 +13,10 @@ radius = 300.0
 [sub_resource type="RectangleShape2D" id=2]
 
 custom_solver_bias = 0.0
-extents = Vector2( 18, 14.5 )
+extents = Vector2( 10, 11 )
 
-[node name="EnemyTank" type="KinematicBody2D" groups=[
-"Tanks",
+[node name="PlayerTank" type="KinematicBody2D" index="0" groups=[
+"Player",
 ]]
 
 input_pickable = false
@@ -25,13 +25,13 @@ collision_mask = 1
 collision/safe_margin = 0.08
 script = ExtResource( 1 )
 _sections_unfolded = [ "Collision", "Linear", "Transform", "collision" ]
-enemy_group = "Player"
-speed = 125
-turn_rate = 0.025
+enemy_group = "Tanks"
+speed = 200
+turn_rate = 0.15
 nav_path = null
 goal_radius = 1000
-draw_lasers = true
-shot_precision = 0.05
+draw_lasers = false
+shot_precision = 0.1
 
 [node name="Visibility" type="Area2D" parent="." index="0"]
 
@@ -49,7 +49,9 @@ _sections_unfolded = [ "Collision" ]
 
 shape = SubResource( 1 )
 
-[node name="Body" type="Sprite" parent="." index="1"]
+[node name="Body" type="Sprite" parent="." index="1" groups=[
+"Player",
+]]
 
 rotation = -1.5708
 scale = Vector2( 0.5, 0.5 )
@@ -73,8 +75,8 @@ _sections_unfolded = [ "Transform" ]
 
 [node name="Sprite" type="Sprite" parent="Turret" index="0"]
 
-position = Vector2( -4, -7.78829e-07 )
 rotation = -1.5708
+scale = Vector2( 0.5, 0.5 )
 texture = ExtResource( 3 )
 offset = Vector2( 0, 10 )
 _sections_unfolded = [ "Offset", "Transform" ]
