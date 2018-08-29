@@ -1,15 +1,74 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://Missile.gd" type="Script" id=1]
 [ext_resource path="res://Sprites/shotLarge.png" type="Texture" id=2]
 [ext_resource path="res://Sprites/bulletRed3_outline.png" type="Texture" id=3]
+[ext_resource path="res://Sprites/smoke_03.png" type="Texture" id=4]
+[ext_resource path="res://Particles2D.gd" type="Script" id=5]
 
 [sub_resource type="RectangleShape2D" id=1]
 
 custom_solver_bias = 0.0
 extents = Vector2( 4, 2 )
 
-[node name="Missile" type="KinematicBody2D"]
+[sub_resource type="CanvasItemMaterial" id=2]
+
+render_priority = 0
+blend_mode = 1
+light_mode = 0
+
+[sub_resource type="Curve" id=3]
+
+min_value = 0.0
+max_value = 1.0
+bake_resolution = 100
+_data = [ Vector2( 0, 0 ), 0.0, 0.0, 0, 0, Vector2( 1, 1 ), 0.0, 0.0, 0, 0 ]
+
+[sub_resource type="CurveTexture" id=4]
+
+flags = 4
+width = 2048
+curve = SubResource( 3 )
+
+[sub_resource type="ParticlesMaterial" id=5]
+
+render_priority = 0
+trail_divisor = 8
+trail_size_modifier = SubResource( 4 )
+emission_shape = 0
+flag_align_y = false
+flag_rotate_y = false
+flag_disable_z = false
+spread = 10.0
+flatness = 0.0
+gravity = Vector3( 0, 0, 0 )
+initial_velocity = 0.0
+initial_velocity_random = 0.0
+angular_velocity = 0.0
+angular_velocity_random = 0.0
+linear_accel = 0.0
+linear_accel_random = 0.0
+radial_accel = 2.0
+radial_accel_random = 1.0
+tangential_accel = 0.0
+tangential_accel_random = 0.0
+damping = 0.5
+damping_random = 0.0
+angle = 90.0
+angle_random = 0.0
+scale = 0.04
+scale_random = 0.0
+color = Color( 1, 1, 1, 1 )
+hue_variation = 0.0
+hue_variation_random = 0.0
+anim_speed = 0.0
+anim_speed_random = 0.0
+anim_offset = 0.0
+anim_offset_random = 0.0
+anim_loop = false
+_sections_unfolded = [ "Angle", "Angular Velocity", "Color", "Damping", "Flags", "Gravity", "Initial Velocity", "Linear Accel", "Scale", "Spread", "Trail" ]
+
+[node name="Missile" type="KinematicBody2D" index="0"]
 
 input_pickable = false
 collision_layer = 0
@@ -37,5 +96,40 @@ _sections_unfolded = [ "Transform" ]
 rotation = 1.5708
 texture = ExtResource( 3 )
 _sections_unfolded = [ "Offset", "Transform", "Visibility", "Z Index" ]
+
+[node name="Particles2D" type="Particles2D" parent="." index="3"]
+
+material = SubResource( 2 )
+position = Vector2( -10, 0 )
+rotation = 3.14159
+emitting = true
+amount = 100
+lifetime = 5.0
+one_shot = false
+preprocess = 0.0
+speed_scale = 0.5
+explosiveness = 0.0
+randomness = 0.0
+fixed_fps = 0
+fract_delta = true
+visibility_rect = Rect2( -100, -100, 200, 200 )
+local_coords = false
+draw_order = 0
+process_material = SubResource( 5 )
+texture = ExtResource( 4 )
+normal_map = null
+h_frames = 1
+v_frames = 1
+script = ExtResource( 5 )
+_sections_unfolded = [ "Drawing", "Material", "Process Material", "Textures", "Time", "Transform", "Visibility" ]
+
+[node name="DissipateTimer" type="Timer" parent="Particles2D" index="0"]
+
+process_mode = 1
+wait_time = 1.0
+one_shot = true
+autostart = false
+
+[connection signal="timeout" from="Particles2D/DissipateTimer" to="Particles2D" method="_on_DissipateTimer_timeout"]
 
 

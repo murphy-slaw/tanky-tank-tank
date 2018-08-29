@@ -11,7 +11,7 @@ func _ready():
 
 func _physics_process(delta):
     if traveled > shot_range:
-        queue_free()
+        die()
         return
     aim()
     var distance = shot_speed * delta
@@ -22,8 +22,10 @@ func _physics_process(delta):
     if col:
         if col.collider.has_method('hit'):
             col.collider.hit(self)
-        queue_free()
+        die()
 
 func aim():
     pass
-    
+
+func die():
+    queue_free()

@@ -32,7 +32,8 @@ func spawn_player():
     
 func _input(event):
     if event is InputEventMouseButton and has_node('PlayerTank'):
-        var tile = map.world_to_map(event.position)
+        var pos = $Navigation2D.get_closest_point(event.position)
+        var tile = map.world_to_map(pos)
         var goal = map.map_to_world(tile)
         goal += map.cell_size * 0.5
         player.goals = [goal]
@@ -54,7 +55,8 @@ func spawn_mob():
     mob.connect("chose_goal", self , '_on_mob_goal')
     mob.set_owner(self)
     mob.position = $Spawn.position
-
+    mob.rotation_degrees = 180
+    
 func _draw():
     if player_goal:
         paint_goal(player_goal)

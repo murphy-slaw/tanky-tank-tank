@@ -3,7 +3,7 @@
 [ext_resource path="res://main.gd" type="Script" id=1]
 [ext_resource path="res://battlefield.tscn" type="PackedScene" id=2]
 
-[node name="Node2D" type="Node2D" index="0"]
+[node name="Node2D" type="Node2D"]
 
 position = Vector2( -0.5, 0.5 )
 z_index = 1
