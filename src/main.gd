@@ -51,18 +51,6 @@ func _input(event):
         player.update_nav()
         update()
         
-func _process(delta):
-#    zone_pops={}
-#    for tank in get_tree().get_nodes_in_group('Tanks'):
-#        for i in range(zones.size()):
-#            if zones[i].has_point(tank.global_position):
-#                if zone_pops.has(i):
-#                    zone_pops[i] += 1
-#                else:
-#                    zone_pops[i] = 1
-    yield(get_tree(), 'idle_frame')
-
-
 func get_depopulated_zone():
     var zone
     if zone_pops.size() < zones.size():
@@ -73,7 +61,6 @@ func get_depopulated_zone():
         zone = zones[ candidate_zones[randi() % candidate_zones.size()]]
     return zone
         
-
 func _on_SpawnTimer_timeout():
     spawn_mob()
     
@@ -130,8 +117,16 @@ func _on_player_died(player):
     print("player died!")
     player = null
     player_goal = null
+    for tank in get_tree().get_nodes_in_group('Tanks'):
+        tank.goals.push_front($Spawn.position)
+        tank.update_nav()
     yield(get_tree().create_timer(3.0), 'timeout')
     spawn_player()
+    for tank in get_tree().get_nodes_in_group('Tanks'):
+        tank.goals.pop_front()
+        tank.choose_random_goal()
+        tank.update_nav()
+    
     
 func _on_mob_goal(mob, point):
     clear_mob_goal(mob)

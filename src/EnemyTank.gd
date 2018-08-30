@@ -54,4 +54,3 @@ func _on_Visibility_body_exited(body):
         var target = target_ref.get_ref()
         if (target and target == body) or not target:
             targets.erase(target_ref)
-

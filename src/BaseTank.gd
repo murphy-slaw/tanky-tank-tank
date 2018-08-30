@@ -178,8 +178,7 @@ func safe_move(move):
             goals = [safe]
             update_nav()
         stalled = true
-        yield(get_tree().create_timer(0.5),'timeout')
-        stalled = false
+        $StallTimer.start()
         lv = Vector2()
     else:
         lv += move
@@ -205,3 +204,6 @@ func _on_Visibility_body_entered(body):
 
 func _on_Visibility_body_exited(body):
     pass
+    
+func _on_StallTimer_timeout():
+    stalled = false

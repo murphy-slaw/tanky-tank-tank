@@ -106,10 +106,19 @@ percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
 
+[node name="StallTimer" type="Timer" parent="." index="6"]
+
+process_mode = 1
+wait_time = 0.5
+one_shot = false
+autostart = false
+
 [connection signal="body_entered" from="Visibility" to="." method="_on_Visibility_body_entered"]
 
 [connection signal="body_exited" from="Visibility" to="." method="_on_Visibility_body_exited"]
 
 [connection signal="timeout" from="ShotTimer" to="." method="_on_ShotTimer_timeout"]
+
+[connection signal="timeout" from="StallTimer" to="." method="_on_StallTimer_timeout"]
 
 
