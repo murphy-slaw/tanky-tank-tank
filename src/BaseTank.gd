@@ -30,6 +30,7 @@ var targets  = {}
 export var draw_lasers = false
 var laser_color = Color(1.0, 0, 0)
 export var shot_precision = 0.1
+var stalled = false
 
 func _ready():
     if nav_path:
@@ -147,7 +148,7 @@ func reached_goal(pos):
     return (global_position - pos).length() < 20
 
 func move_tank():
-    if path.size() == 0:
+    if path.size() == 0 or stalled:
         return
     var move = path[0] - global_position
     var target_angle = Artillery.calc_angle_diff(self, path[0])
@@ -170,11 +171,16 @@ func move_tank():
 
 func safe_move(move):
     if test_move(transform, move):
-        var safe_point = get_facing() * -100
-        var safe = nav.get_closest_point(safe_point)
-        goals.push_front(safe)
-        update_nav()
-        lv -= lv.normalized() * speed
+        if randi() % 2:
+            var safe_point = position + (get_facing() * -100)
+            var safe = nav.get_closest_point(safe_point)
+            print(safe)
+            goals = [safe]
+            update_nav()
+        stalled = true
+        yield(get_tree().create_timer(0.5),'timeout')
+        stalled = false
+        lv = Vector2()
     else:
         lv += move
 

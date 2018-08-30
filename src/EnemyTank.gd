@@ -27,9 +27,11 @@ func die():
         print ("enemy tank %s died, but already dead!" % self.name)
 
 func choose_random_goal():
-    var point = Vector2(1,0)
-    var angle = deg2rad(randi() % 360)
-    point = position + point.rotated(angle) * goal_radius
+    var zone = get_parent().get_depopulated_zone()
+    if not zone:
+        return
+    var point = Vector2( randi() % int(zone.size.x), randi() % int(zone.size.y))
+    point += zone.position
     var goal = nav.get_closest_point(point)
     if map:
         var tile = map.world_to_map(goal)
@@ -43,6 +45,9 @@ func _on_Visibility_body_entered(body):
         targets[weakref(body)] = 1
         goals.push_front(nav.get_closest_point(body.position))
         update_nav()
+    else:
+        pass
+#        choose_random_goal()
 
 func _on_Visibility_body_exited(body):
     for target_ref in targets.keys():

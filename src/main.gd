@@ -11,12 +11,23 @@ var mob_count = 0
 var mob_goals = {}
 var player_goal = null
 var player_spawn = null
+var zones = []
+var zone_pops = {}
 
 func _ready():
     randomize()
     spawn_player()
     spawn_mob()
+    calc_zones(4)
     
+func calc_zones(splits):
+    var vrect = get_viewport_rect()
+    var split_size = vrect.size / splits
+
+    for x in range(splits):
+        for y in range(splits):
+            var zone = Rect2(Vector2(x * split_size.x, y * split_size.y), split_size)
+            zones.append(zone)
     
 func spawn_player():
     print("spawning new player")
@@ -39,6 +50,29 @@ func _input(event):
         player.goals = [goal]
         player.update_nav()
         update()
+        
+func _process(delta):
+#    zone_pops={}
+#    for tank in get_tree().get_nodes_in_group('Tanks'):
+#        for i in range(zones.size()):
+#            if zones[i].has_point(tank.global_position):
+#                if zone_pops.has(i):
+#                    zone_pops[i] += 1
+#                else:
+#                    zone_pops[i] = 1
+    yield(get_tree(), 'idle_frame')
+
+
+func get_depopulated_zone():
+    var zone
+    if zone_pops.size() < zones.size():
+        var candidate_zones = []
+        for i in range(zones.size()):
+            if not zone_pops.has(i):
+                candidate_zones.append(i)
+        zone = zones[ candidate_zones[randi() % candidate_zones.size()]]
+    return zone
+        
 
 func _on_SpawnTimer_timeout():
     spawn_mob()
@@ -68,15 +102,30 @@ func _draw():
         
 func paint_goal(points):
         if points and points.size() > 1:
-            draw_polyline(points, Color(0, 0, 0, 0.2), 2.0, false)
+            draw_polyline(points, Color(.5, .5, .5, 1.0), 2.0, false)
         for point in points:
-            draw_circle(point, 5, Color(0, 0, 0, 0.2))
+            draw_circle(point, 5, Color(.5, .5, .5, 1.0))
 
 func _on_mob_died(mob):
     mob_count -=1
-    mob_goals.erase(mob)
+    clear_mob_goal(mob)
     update()
     
+func clear_mob_goal(mob):
+    if not mob_goals.has(mob):
+        return
+    var points = mob_goals[mob]
+    if not points.size():
+        return
+    mob_goals.erase(mob)
+    for i in range(zones.size()):
+      if zones[i].has_point(points[-1]):
+        if zone_pops.has(i):
+            zone_pops[i] -= 1
+            if zone_pops[i] == 0:
+                zone_pops.erase(i)
+        
+
 func _on_player_died(player):
     print("player died!")
     player = null
@@ -85,7 +134,16 @@ func _on_player_died(player):
     spawn_player()
     
 func _on_mob_goal(mob, point):
+    clear_mob_goal(mob)
     mob_goals[mob] = point
+    if not point.size():
+        return
+    for i  in range(zones.size()):
+        if zones[i].has_point(point[-1]):
+            if zone_pops.has(i):
+                zone_pops[i] += 1
+            else:
+                zone_pops[i] = 1
     update()
     
 func _on_player_goal(player, point):
