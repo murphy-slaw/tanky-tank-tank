@@ -9,6 +9,9 @@ func _ready():
         choose_random_goal()
     $ShotTimer.start()
 
+func shoot(target):
+    $ShotSound.play()
+    .shoot(target)
 
 func _physics_process(delta):
     if goals.empty():
@@ -18,11 +21,11 @@ func handle_collisions():
     if get_slide_count():
         die()
 
-func die():
+func die(killer=null):
     if not dead:
         dead = true
 #        print ('enemy tank %s died' % self.name)
-        .die()
+        .die(killer)
     else:
         print ("enemy tank %s died, but already dead!" % self.name)
 

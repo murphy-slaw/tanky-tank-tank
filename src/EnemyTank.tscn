@@ -1,9 +1,11 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://EnemyTank.gd" type="Script" id=1]
 [ext_resource path="res://Sprites/tankBody_huge.png" type="Texture" id=2]
 [ext_resource path="res://Sprites/specialBarrel2.png" type="Texture" id=3]
 [ext_resource path="res://Floaty.gd" type="Script" id=4]
+[ext_resource path="res://Sounds/Artillery.ogg" type="AudioStream" id=5]
+[ext_resource path="res://Sounds/shot.ogg" type="AudioStream" id=6]
 
 [sub_resource type="CircleShape2D" id=1]
 
@@ -112,6 +114,26 @@ process_mode = 1
 wait_time = 0.5
 one_shot = false
 autostart = false
+
+[node name="Rumble" type="AudioStreamPlayer2D" parent="." index="7"]
+
+stream = ExtResource( 5 )
+volume_db = 12.0
+pitch_scale = 1.0
+autoplay = true
+max_distance = 1000.0
+attenuation = 1.0
+bus = "Master"
+area_mask = 1
+
+[node name="ShotSound" type="AudioStreamPlayer" parent="." index="8"]
+
+stream = ExtResource( 6 )
+volume_db = 0.0
+pitch_scale = 0.8
+autoplay = false
+mix_target = 0
+bus = "SFX"
 
 [connection signal="body_entered" from="Visibility" to="." method="_on_Visibility_body_entered"]
 

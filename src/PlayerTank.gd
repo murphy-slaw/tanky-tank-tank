@@ -1,5 +1,6 @@
 extends "res://BaseTank.gd"
 
+onready var camera = get_node("Camera2D")
 func _ready():
     can_shoot = true
     if nav_path:
@@ -8,6 +9,10 @@ func _ready():
     
 func safe_move(move):
     lv += move
+
+func shoot(target):
+    $LaunchSound.play()
+    .shoot(target)
 
 func reached_goal(pos):
     return (global_position - pos).length() < 5

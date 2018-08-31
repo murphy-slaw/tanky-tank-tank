@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://PlayerTank.gd" type="Script" id=1]
 [ext_resource path="res://Sprites/tankBody_green_outline.png" type="Texture" id=2]
 [ext_resource path="res://Sprites/tankDark_barrel1_outline.png" type="Texture" id=3]
 [ext_resource path="res://Floaty.gd" type="Script" id=4]
+[ext_resource path="res://Sounds/launch.ogg" type="AudioStream" id=5]
 
 [sub_resource type="CircleShape2D" id=1]
 
@@ -109,6 +110,41 @@ size_flags_vertical = 4
 percent_visible = 1.0
 lines_skipped = 0
 max_lines_visible = -1
+
+[node name="LaunchSound" type="AudioStreamPlayer" parent="." index="6"]
+
+stream = ExtResource( 5 )
+volume_db = 0.0
+pitch_scale = 1.0
+autoplay = false
+mix_target = 0
+bus = "SFX"
+
+[node name="Camera2D" type="Camera2D" parent="." index="7"]
+
+anchor_mode = 1
+rotating = false
+current = true
+zoom = Vector2( 1, 1 )
+limit_left = 0
+limit_top = 0
+limit_right = 1280
+limit_bottom = 720
+limit_smoothed = false
+drag_margin_h_enabled = false
+drag_margin_v_enabled = false
+smoothing_enabled = true
+smoothing_speed = 5.0
+offset_v = 0.0
+offset_h = 0.0
+drag_margin_left = 0.5
+drag_margin_top = 0.2
+drag_margin_right = 0.5
+drag_margin_bottom = 0.2
+editor_draw_screen = true
+editor_draw_limits = false
+editor_draw_drag_margin = false
+_sections_unfolded = [ "Drag Margin", "Limit", "Smoothing" ]
 
 [connection signal="body_entered" from="Visibility" to="." method="_on_Visibility_body_entered"]
 

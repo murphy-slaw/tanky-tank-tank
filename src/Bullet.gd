@@ -29,3 +29,9 @@ func aim():
 
 func die():
     queue_free()
+
+func is_type(type): 
+    return type == "Bullet" or .is_type(type)
+    
+func get_type(): 
+    return "Bullet"

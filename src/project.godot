@@ -11,7 +11,7 @@ config_version=3
 [application]
 
 config/name="Tanky Tank Tank"
-run/main_scene="res://main.tscn"
+run/main_scene="res://Main.tscn"
 run/low_processor_mode=true
 config/icon="res://icon.png"
 
@@ -24,7 +24,9 @@ Artillery="*res://Artillery.gd"
 window/size/width=1280
 window/size/height=720
 window/size/fullscreen=true
-window/stretch/mode="2d"
+window/size/always_on_top=true
+window/dpi/allow_hidpi=true
+window/stretch/mode="viewport"
 window/stretch/aspect="keep"
 
 [editor_plugins]
@@ -37,5 +39,8 @@ enabled=PoolStringArray( "ch.fischspiele.tilesethelper" )
 
 [rendering]
 
+quality/intended_usage/framebuffer_allocation=1
 quality/2d/use_pixel_snap=true
+quality/filters/use_nearest_mipmap_filter=true
 environment/default_environment="res://default_env.tres"
+quality/dynamic_fonts/use_oversampling=true

@@ -7,7 +7,14 @@ func aim():
         return
     var angle_diff = Artillery.calc_angle_diff(self, t.position)
     rotation = lerp(rotation, rotation + angle_diff, 0.05)
+
+func is_type(type): 
+    return type == "Missile" or .is_type(type)
     
+func get_type(): 
+    return "Missile"
+
+
 #func die():
 #    var particles = get_node('Particles2D')
 #    var parent = get_parent()

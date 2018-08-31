@@ -192,12 +192,12 @@ func is_facing(dir):
 func handle_collisions():
     pass
     
-func die():
-    emit_signal('die', self)
+func die(killer=null):
+    emit_signal('die', self, killer)
     queue_free()
 
 func hit(body):
-    die()
+    die(body)
     
 func _on_Visibility_body_entered(body):
     pass
