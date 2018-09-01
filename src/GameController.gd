@@ -154,10 +154,11 @@ func _on_player_died(player, killer):
     lives -= 1
     emit_signal('life_count_changed', lives)
     if lives <= 0:
-        emit_signal('game_ended')
         for tank in get_tree().get_nodes_in_group("Tanks"):
             tank.queue_free()
-            return
+        yield(get_tree().create_timer(2.0), 'timeout')
+        emit_signal('game_ended')
+        return
     player = null
     player_goal = null
     for tank in get_tree().get_nodes_in_group('Tanks'):
